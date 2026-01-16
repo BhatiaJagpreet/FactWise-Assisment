@@ -6,8 +6,38 @@ import { toast, Toaster } from 'sonner';
 import Navbar from '@/components/Navbar';
 import Tabs from '@/components/Tabs';
 
+interface NotificationSettings {
+  email: boolean;
+  push: boolean;
+  sms: boolean;
+}
+
+interface DisplaySettings {
+  darkMode: boolean;
+  compactView: boolean;
+  showAvatars: boolean;
+}
+
+interface PrivacySettings {
+  showEmail: boolean;
+  showSalary: boolean;
+  allowExport: boolean;
+}
+
+interface Settings {
+  companyName: string;
+  email: string;
+  timezone: string;
+  language: string;
+  dateFormat: string;
+  currency: string;
+  notifications: NotificationSettings;
+  display: DisplaySettings;
+  privacy: PrivacySettings;
+}
+
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<Settings>({
     companyName: 'Acme Corporation',
     email: 'admin@acme.com',
     timezone: 'America/New_York',
@@ -35,12 +65,12 @@ export default function SettingsPage() {
     toast.success('Settings saved successfully!');
   };
 
-  const handleToggle = (category: string, key: string) => {
+  const handleToggle = (category: 'notifications' | 'display' | 'privacy', key: string) => {
     setSettings(prev => ({
       ...prev,
       [category]: {
-        ...(prev as any)[category],
-        [key]: !(prev as any)[category][key],
+        ...prev[category],
+        [key]: !prev[category][key as keyof typeof prev[typeof category]],
       },
     }));
   };
@@ -179,12 +209,12 @@ export default function SettingsPage() {
                     <button
                       onClick={() => handleToggle('notifications', item.key)}
                       className={`relative w-14 h-7 rounded-full transition-colors ${
-                        (settings.notifications as any)[item.key] ? 'bg-blue-600' : 'bg-gray-300'
+                        settings.notifications[item.key as keyof NotificationSettings] ? 'bg-blue-600' : 'bg-gray-300'
                       }`}
                     >
                       <span
                         className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                          (settings.notifications as any)[item.key] ? 'translate-x-7' : ''
+                          settings.notifications[item.key as keyof NotificationSettings] ? 'translate-x-7' : ''
                         }`}
                       />
                     </button>
@@ -220,12 +250,12 @@ export default function SettingsPage() {
                     <button
                       onClick={() => handleToggle('display', item.key)}
                       className={`relative w-14 h-7 rounded-full transition-colors ${
-                        (settings.display as any)[item.key] ? 'bg-green-600' : 'bg-gray-300'
+                        settings.display[item.key as keyof DisplaySettings] ? 'bg-green-600' : 'bg-gray-300'
                       }`}
                     >
                       <span
                         className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                          (settings.display as any)[item.key] ? 'translate-x-7' : ''
+                          settings.display[item.key as keyof DisplaySettings] ? 'translate-x-7' : ''
                         }`}
                       />
                     </button>
@@ -261,12 +291,12 @@ export default function SettingsPage() {
                     <button
                       onClick={() => handleToggle('privacy', item.key)}
                       className={`relative w-14 h-7 rounded-full transition-colors ${
-                        (settings.privacy as any)[item.key] ? 'bg-orange-600' : 'bg-gray-300'
+                        settings.privacy[item.key as keyof PrivacySettings] ? 'bg-orange-600' : 'bg-gray-300'
                       }`}
                     >
                       <span
                         className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                          (settings.privacy as any)[item.key] ? 'translate-x-7' : ''
+                          settings.privacy[item.key as keyof PrivacySettings] ? 'translate-x-7' : ''
                         }`}
                       />
                     </button>

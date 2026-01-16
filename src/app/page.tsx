@@ -9,32 +9,30 @@ import SummaryCard from '@/components/SummaryCard';
 import DataGrid from '@/components/DataGrid';
 import RowFormModal from '@/components/RowFormModal';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
-import RowDetailsPanel from '@/components/RowDetailsPanel';
 import { Employee } from '@/types/dashboard';
 import { calculateSummaryStats, formatCurrency } from '@/lib/formatters';
 import sampleData from '@/data/sample-data.json';
 
 export default function Dashboard() {
-  const [data, setData] = useState<Employee[]>((sampleData as any).employees || []);
+  const [data, setData] = useState<Employee[]>((sampleData as { employees: Employee[] }).employees || []);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Employee | null>(null);
   const [editingRow, setEditingRow] = useState<Employee | null>(null);
   const [deletingRow, setDeletingRow] = useState<Employee | null>(null);
-  const [showDetailsPanel, setShowDetailsPanel] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const summaryStats = useMemo(() => calculateSummaryStats(data), [data]);
 
-  const handleAddRow = useCallback((formData: any) => {
+  const handleAddRow = useCallback((formData: Partial<Employee>) => {
     setIsLoading(true);
     setTimeout(() => {
-      const newEmployee: Employee = {
+      const newEmployee = {
         ...formData,
         id: Math.max(...data.map(e => e.id)) + 1,
-      };
+      } as Employee;
       setData((prev) => [...prev, newEmployee]);
       setIsLoading(false);
       setIsAddModalOpen(false);
@@ -42,7 +40,7 @@ export default function Dashboard() {
     }, 500);
   }, [data]);
 
-  const handleEditRow = useCallback((formData: any) => {
+  const handleEditRow = useCallback((formData: Partial<Employee>) => {
     setIsLoading(true);
     setTimeout(() => {
       setData((prev) =>
@@ -69,7 +67,6 @@ export default function Dashboard() {
       setDeletingRow(null);
       if (selectedRow?.id === deletingRow.id) {
         setSelectedRow(null);
-        setShowDetailsPanel(false);
       }
       toast.success('Row deleted successfully!');
     }, 500);
@@ -87,9 +84,6 @@ export default function Dashboard() {
 
   const handleRowSelected = useCallback((row: Employee | null) => {
     setSelectedRow(row);
-    if (row) {
-      setShowDetailsPanel(true);
-    }
   }, []);
 
   const handleRetry = useCallback(() => {

@@ -3,7 +3,7 @@
 import { useMemo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Employee } from '@/types/dashboard';
-import { formatCurrency, formatDate, getStatusColor, getPerformanceColor, formatFullName } from '@/lib/formatters';
+import { formatCurrency, formatDate, getPerformanceColor, formatFullName } from '@/lib/formatters';
 
 interface DataGridProps {
   rowData: Employee[];
@@ -33,7 +33,7 @@ export default function DataGrid({
   }, [rowData]);
 
   const filteredData = useMemo(() => {
-    let filtered = rowData.filter((emp) => {
+    const filtered = rowData.filter((emp) => {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = (
         emp.firstName.toLowerCase().includes(searchLower) ||

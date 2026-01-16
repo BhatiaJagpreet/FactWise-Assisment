@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Employee } from '@/types/dashboard';
-import { formatCurrency, formatDate, getStatusColor, getPerformanceColor, formatFullName } from '@/lib/formatters';
+import { formatCurrency, formatDate, getStatusColor, formatFullName } from '@/lib/formatters';
 
 interface RowDetailsPanelProps {
   row: Employee | null;

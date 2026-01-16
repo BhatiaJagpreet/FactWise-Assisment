@@ -29,7 +29,7 @@ import {
 import sampleData from '@/data/sample-data.json';
 import { Employee } from '@/types/dashboard';
 
-const employees: Employee[] = (sampleData as any).employees || [];
+const employees: Employee[] = (sampleData as { employees: Employee[] }).employees || [];
 
 const COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
 
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
   // Monthly Hire Trend (simulated)
   const hireTrend = useMemo(() => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months.map((month, i) => ({
+    return months.map((month) => ({
       month,
       hires: Math.floor(Math.random() * 5) + 1,
       attrition: Math.floor(Math.random() * 2),
@@ -168,7 +168,7 @@ export default function AnalyticsPage() {
                     outerRadius={100}
                     paddingAngle={5}
                     dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }: { name?: string; percent?: number }) => `${name || ''} ${((percent || 0) * 100).toFixed(0)}%`}
                   >
                     {departmentData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -192,7 +192,7 @@ export default function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="department" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, 'Avg Salary']} />
+                  <Tooltip formatter={(value) => [`$${Number(value || 0).toLocaleString()}`, 'Avg Salary']} />
                   <Bar dataKey="avgSalary" fill="url(#barGradient)" radius={[8, 8, 0, 0]} />
                   <defs>
                     <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">

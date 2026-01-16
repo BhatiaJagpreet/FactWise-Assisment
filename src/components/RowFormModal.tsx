@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Employee } from '@/types/dashboard';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 const employeeSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -29,7 +29,7 @@ type EmployeeFormData = z.infer<typeof employeeSchema>;
 interface RowFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Partial<Employee>) => void;
   initialData?: Employee | null;
   mode: 'add' | 'edit';
 }
@@ -44,7 +44,7 @@ export default function RowFormModal({
   const [hasChanges, setHasChanges] = useState(false);
   const [skillsInput, setSkillsInput] = useState('');
 
-  const defaultValues: EmployeeFormData = initialData
+  const defaultValues: EmployeeFormData = useMemo(() => initialData
     ? {
         firstName: initialData.firstName,
         lastName: initialData.lastName,
@@ -76,7 +76,7 @@ export default function RowFormModal({
         hireDate: new Date().toISOString().split('T')[0],
         manager: null,
         skills: [],
-      };
+      }, [initialData]);
 
   const {
     register,
@@ -84,7 +84,6 @@ export default function RowFormModal({
     formState: { errors, isDirty },
     reset,
     watch,
-    setValue,
   } = useForm<EmployeeFormData>({
     resolver: zodResolver(employeeSchema),
     defaultValues,
@@ -100,14 +99,14 @@ export default function RowFormModal({
     } else {
       setHasChanges(isDirty);
     }
-  }, [watchedFields, isDirty, mode, initialData]);
+  }, [watchedFields, isDirty, mode, initialData, defaultValues]);
 
   useEffect(() => {
     if (isOpen && initialData) {
       reset(defaultValues);
       setSkillsInput(initialData.skills?.join(', ') || '');
     }
-  }, [isOpen, initialData, reset]);
+  }, [isOpen, initialData, reset, defaultValues]);
 
   const handleFormSubmit = (data: EmployeeFormData) => {
     const skills = skillsInput.split(',').map(s => s.trim()).filter(s => s);
